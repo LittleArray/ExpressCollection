@@ -20,16 +20,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             ExpressCollectionTheme {
                 val appNavController = rememberNavController()
-                NavHost(navController = appNavController, startDestination = Route.USER_LOGIN_PAGE){
+                NavHost(navController = appNavController, startDestination = Route.WELCOME_PAGE){
                     composable(Route.USER_LOGIN_PAGE){
+                        UserLoginView(appNavController)
+                    }
+                    composable(Route.WELCOME_PAGE){
                         WelcomeView(appNavController)
                     }
                     composable(Route.MAIN_NAV){
                         MainNavView(appNavController)
                     }
                 }
-
-
             }
         }
     }
