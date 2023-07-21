@@ -11,6 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import top.ffshaozi.expresscollection.config.Route
 import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,7 +22,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ExpressCollectionTheme {
-                val appNavController =
+                val appNavController = rememberNavController()
+                NavHost(navController = appNavController, startDestination = Route.USER_LOGIN_PAGE){
+                    composable(Route.USER_LOGIN_PAGE){
+
+                    }
+                    composable(Route.MAIN_NAV){
+
+                    }
+                }
 
 
             }
