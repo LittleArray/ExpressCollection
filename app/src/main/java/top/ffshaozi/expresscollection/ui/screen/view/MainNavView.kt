@@ -10,10 +10,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import top.ffshaozi.expresscollection.R
+import top.ffshaozi.expresscollection.config.UIRoute
 import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
-
+import kotlin.system.exitProcess
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,6 +30,17 @@ fun MainNavView(appNavController: NavHostController?=null) {
         Pair("设置", R.drawable.ic_action_settings))
     var nowActiveIndex by remember{
         mutableStateOf(0)
+    }
+    val UiNavController = rememberNavController()
+    UiNavController.addOnDestinationChangedListener{_,destination,_->
+        UIRoute.apply {
+            when (destination.route) {
+                SUBMIT_EXP_PAGE-> {nowActiveIndex=0}
+                COLLECT_EXP_PAGE -> {nowActiveIndex=1}
+                SEETING_PAGE -> {nowActiveIndex=2}
+            }
+        }
+
     }
     Scaffold (modifier = Modifier.fillMaxSize(),bottomBar = {
         NavigationBar {
@@ -40,7 +56,22 @@ fun MainNavView(appNavController: NavHostController?=null) {
                         )
                     },
                     onClick = {
-                        nowActiveIndex = index
+                        nowActiveIndex = when(index){
+                            0 ->{
+                                UiNavController.mainNavTo(UIRoute.SUBMIT_EXP_PAGE)
+                                index
+                            }
+                            1 ->{
+                                UiNavController.mainNavTo(UIRoute.COLLECT_EXP_PAGE)
+                                index
+                            }
+                            2 ->{
+                                UiNavController.mainNavTo(UIRoute.SEETING_PAGE)
+                                index
+                            }else->{
+                                -1
+                            }
+                        }
                     },
                     label = {
                         Text(text = pair.first)
@@ -53,10 +84,27 @@ fun MainNavView(appNavController: NavHostController?=null) {
         }
     }){
         Box(modifier = Modifier.padding(it)){
-
+            NavHost(navController = UiNavController, startDestination = UIRoute.SUBMIT_EXP_PAGE){
+                composable(UIRoute.SUBMIT_EXP_PAGE){
+                    SubmitView()
+                }
+                composable(UIRoute.COLLECT_EXP_PAGE){
+                    CollectView()
+                }
+                composable(UIRoute.SEETING_PAGE){
+                    SettingsView()
+                }
+            }
         }
     }
 }
+fun NavHostController.mainNavTo(route:String) {
+    this.navigate(route){
+        popUpTo(this@mainNavTo.graph.findStartDestination().id)
+        launchSingleTop=true
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun previewMain(){
