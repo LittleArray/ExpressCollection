@@ -6,25 +6,31 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 import top.ffshaozi.expresscollection.config.Route
+import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
+import kotlin.system.exitProcess
 
 @Composable
 fun WelcomeView(appNavController: NavHostController?=null) {
-    var username = remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var contentVisible1 by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         delay(200)
         contentVisible1 = true
-        delay(2500)
+        delay(1000)
         appNavController?.navigate(Route.MAIN_NAV)
     }
 
@@ -46,9 +52,19 @@ fun WelcomeView(appNavController: NavHostController?=null) {
                 fontSize = 36.sp,
                 lineHeight = 48.sp,
                 textAlign = TextAlign.Center,
-                maxLines = 2
+                maxLines = 2,
+                modifier = Modifier.padding(bottom = 15.dp)
             )
         }
+        Button(onClick = { exitProcess(0)}){
+            Text(text = "     退出     ")
+        }
     }
-
+}
+@Preview(showBackground = true)
+@Composable
+fun previewWelcome(){
+    ExpressCollectionTheme {
+        WelcomeView()
+    }
 }

@@ -26,10 +26,10 @@ import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
 
 @Composable
 fun UserLoginView(appNavController: NavHostController?=null) {
-    var username = remember {
+    var username by remember {
         mutableStateOf("")
     }
-    var serverUrl = remember {
+    var serverUrl by remember {
         mutableStateOf("")
     }
     var contentVisible1 by remember{ mutableStateOf(false) }
@@ -73,9 +73,9 @@ fun UserLoginView(appNavController: NavHostController?=null) {
                 horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     TextField(
-                        value = username.value,
+                        value = username,
                         onValueChange = {
-                            username.value = it
+                            username = it
                         },
                         label = {
                             Text(
@@ -87,9 +87,9 @@ fun UserLoginView(appNavController: NavHostController?=null) {
 
 
                     TextField(
-                        value = serverUrl.value,
+                        value = serverUrl,
                         onValueChange = {
-                            serverUrl.value = it
+                            serverUrl = it
                         },
                         label = {
                             Text(
