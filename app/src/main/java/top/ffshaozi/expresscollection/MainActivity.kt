@@ -16,11 +16,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import top.ffshaozi.expresscollection.config.AppState.cm
+import top.ffshaozi.expresscollection.config.AppState.smsData
 import top.ffshaozi.expresscollection.config.Route
 import top.ffshaozi.expresscollection.ui.screen.view.MainNavView
 import top.ffshaozi.expresscollection.ui.screen.view.UserLoginView
 import top.ffshaozi.expresscollection.ui.screen.view.WelcomeView
 import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
+import top.ffshaozi.expresscollection.utils.GetSMS.getSMS
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +43,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        //获取剪切板管理器对象
         cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        //获取短信
+        smsData = getSMS(this)
     }
 }
 

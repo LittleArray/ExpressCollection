@@ -1,14 +1,12 @@
 package top.ffshaozi.expresscollection.ui.screen.view
 
 import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,9 +16,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.getSystemService
+import com.setruth.yangdialog.YangDialog
+import com.setruth.yangdialog.YangDialogDefaults
 import top.ffshaozi.expresscollection.config.AppState.cm
+import top.ffshaozi.expresscollection.config.AppState.smsData
 import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubmitView (){
     var context by remember {
@@ -28,6 +30,48 @@ fun SubmitView (){
     }
     var username by remember {
         mutableStateOf("")
+    }
+    var dialogShowMsg by remember {
+        mutableStateOf(false)
+    }
+    YangDialog(
+        title = "选择短信",
+        isShow = dialogShowMsg,//通过isShow展示或者隐藏dialog
+        onConfirm = {//确认选项的回调
+            dialogShowMsg = false
+        },
+        //底部设置
+        bottomConfig = YangDialogDefaults.bottomConfig(
+            showCancel = false
+        ),
+        onDismissRequest = { //遮罩层点击的回调
+            dialogShowMsg = false
+        },
+    ) {
+        Box(
+            modifier = Modifier
+                .height(600.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Column {
+                smsData.forEachIndexed { _, smsData ->
+                    Card (
+                        onClick = {
+                            context = smsData.body.toString()
+                            dialogShowMsg = false
+                        },
+                        modifier = Modifier
+                            .padding(10.dp)
+                    ){
+                        Text(
+                            text = smsData.address.toString() + "  " + smsData.date.toString() + "\n\n" + smsData.body.toString(),
+                            modifier = Modifier
+                                .padding(12.dp)
+                        )
+                    }
+                }
+            }
+        }
     }
     Column (modifier = Modifier
         .fillMaxSize()
@@ -76,7 +120,7 @@ fun SubmitView (){
             ){
                 Button(
                 onClick = {
-                            context = getCM()
+                    context = getCM()
                           },
                 modifier = Modifier
                     .padding(end = 7.dp)
@@ -85,7 +129,9 @@ fun SubmitView (){
                 Text(text = "获取剪切板")
                 }
                 Button(
-                    onClick = {/*TODO*/},
+                    onClick = {
+                        dialogShowMsg=true
+                              },
                     modifier = Modifier
                         .padding(end = 7.dp)
                         .weight(1f)
@@ -99,7 +145,6 @@ fun SubmitView (){
                 ){
                     Text(text = "获取截图")
                 } }
-
         }
     }
     Column (
@@ -115,6 +160,7 @@ fun getCM():String{
     val item = clipData.getItemAt(0)
     return item.text.toString()
 }
+
 @Preview(showBackground = true)
 @Composable
 fun previewSubmit(){
