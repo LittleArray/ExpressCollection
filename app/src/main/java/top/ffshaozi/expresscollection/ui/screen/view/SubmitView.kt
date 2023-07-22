@@ -1,23 +1,43 @@
 package top.ffshaozi.expresscollection.ui.screen.view
 
 import android.content.ClipData
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.graphics.drawable.Drawable
 import android.net.Uri
-import androidx.compose.foundation.background
+import android.os.Build
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.compose.ui.window.PopupProperties
+import androidx.compose.ui.zIndex
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.setruth.yangdialog.YangDialog
 import com.setruth.yangdialog.YangDialogDefaults
+import kotlinx.coroutines.launch
+import top.ffshaozi.expresscollection.R
 import top.ffshaozi.expresscollection.config.AppState.cm
 import top.ffshaozi.expresscollection.config.AppState.smsData
 import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
@@ -34,6 +54,13 @@ fun SubmitView (){
     var dialogShowMsg by remember {
         mutableStateOf(false)
     }
+    //选择图片
+    val pickImage = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        uri?.let {
+            context="Selected URI: $uri"
+        }
+    }
+
     YangDialog(
         title = "选择短信",
         isShow = dialogShowMsg,//通过isShow展示或者隐藏dialog
@@ -139,12 +166,15 @@ fun SubmitView (){
                     Text(text = "获取短信")
                 }
                 Button(
-                    onClick = {/*TODO*/},
+                    onClick = {
+                        pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                       },
                     modifier = Modifier
                         .weight(1f)
                 ){
                     Text(text = "获取截图")
-                } }
+                }
+            }
         }
     }
     Column (

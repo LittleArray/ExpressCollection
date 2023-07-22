@@ -31,6 +31,7 @@ fun MainNavView(appNavController: NavHostController?=null) {
     var nowActiveIndex by remember{
         mutableStateOf(0)
     }
+
     val UiNavController = rememberNavController()
     UiNavController.addOnDestinationChangedListener{_,destination,_->
         UIRoute.apply {

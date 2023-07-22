@@ -5,8 +5,12 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
@@ -16,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import top.ffshaozi.expresscollection.config.AppState.cm
+import top.ffshaozi.expresscollection.config.AppState.pickMedia
 import top.ffshaozi.expresscollection.config.AppState.smsData
 import top.ffshaozi.expresscollection.config.Route
 import top.ffshaozi.expresscollection.ui.screen.view.MainNavView
@@ -47,6 +52,17 @@ class MainActivity : ComponentActivity() {
         cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         //获取短信
         smsData = getSMS(this)
+        //照片选择器
+        // Registers a photo picker activity launcher in single-select mode.
+        pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            // Callback is invoked after the user selects a media item or closes the
+            // photo picker.
+            if (uri != null) {
+                Log.e("PhotoPicker", "Selected URI: $uri")
+            } else {
+                Log.e("PhotoPicker", "No media selected")
+            }
+        }
     }
 }
 
