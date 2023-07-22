@@ -1,28 +1,22 @@
 package top.ffshaozi.expresscollection
 
-import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.lifecycle.ViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import top.ffshaozi.expresscollection.config.AppState.cm
-import top.ffshaozi.expresscollection.config.AppState.pickMedia
-import top.ffshaozi.expresscollection.config.AppState.smsData
+import top.ffshaozi.expresscollection.ui.screen.state.AppState.cm
+import top.ffshaozi.expresscollection.ui.screen.state.AppState.pickMedia
+import top.ffshaozi.expresscollection.ui.screen.state.AppState.smsData
 import top.ffshaozi.expresscollection.config.Route
+import top.ffshaozi.expresscollection.config.Setting.USER_NAME
 import top.ffshaozi.expresscollection.ui.screen.view.MainNavView
 import top.ffshaozi.expresscollection.ui.screen.view.UserLoginView
 import top.ffshaozi.expresscollection.ui.screen.view.WelcomeView
@@ -35,7 +29,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             ExpressCollectionTheme {
                 val appNavController = rememberNavController()
-                NavHost(navController = appNavController, startDestination = Route.WELCOME_PAGE){
+                var strRoute = if(USER_NAME==""){
+                    Route.USER_LOGIN_PAGE
+                } else {
+                    Route.WELCOME_PAGE
+                }
+                NavHost(navController = appNavController, startDestination = strRoute){
                     composable(Route.USER_LOGIN_PAGE){
                         UserLoginView(appNavController)
                     }

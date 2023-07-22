@@ -1,4 +1,4 @@
-package top.ffshaozi.expresscollection.config
+package top.ffshaozi.expresscollection.ui.screen.state
 
 import android.content.ClipboardManager
 import androidx.activity.result.ActivityResultLauncher

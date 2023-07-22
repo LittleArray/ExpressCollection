@@ -20,12 +20,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 import top.ffshaozi.expresscollection.config.Route
+import top.ffshaozi.expresscollection.config.Setting.USER_NAME
 import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
 import kotlin.system.exitProcess
 
 @Composable
 fun WelcomeView(appNavController: NavHostController?=null) {
-    var username by remember { mutableStateOf("") }
     var contentVisible1 by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         delay(200)
@@ -47,7 +47,7 @@ fun WelcomeView(appNavController: NavHostController?=null) {
             expandVertically(expandFrom = Alignment.Bottom)
         ) {
             Text(
-                text = "欢迎回来\n$username",
+                text = "欢迎回来\n$USER_NAME",
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 36.sp,
                 lineHeight = 48.sp,

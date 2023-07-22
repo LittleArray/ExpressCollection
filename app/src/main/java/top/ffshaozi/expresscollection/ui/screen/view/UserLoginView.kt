@@ -15,25 +15,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 import top.ffshaozi.expresscollection.config.Route
+import top.ffshaozi.expresscollection.config.Setting.SERVER_URL
+import top.ffshaozi.expresscollection.config.Setting.USER_NAME
+import top.ffshaozi.expresscollection.ui.screen.intent.LoginViewModel
 import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
 
 
 @Composable
 fun UserLoginView(appNavController: NavHostController?=null) {
-    var username by remember {
-        mutableStateOf("")
-    }
-    var serverUrl by remember {
-        mutableStateOf("")
-    }
+    val vm :LoginViewModel = viewModel()
+    val serverUrl by vm.serverUrl.collectAsState()
+    val userName by vm.userName.collectAsState()
     var contentVisible1 by remember{ mutableStateOf(false) }
     var contentVisible2 by remember{ mutableStateOf(false) }
+    var err:String ?= null
     LaunchedEffect(Unit){
         delay(500)
         contentVisible1 = true
@@ -73,9 +74,9 @@ fun UserLoginView(appNavController: NavHostController?=null) {
                 horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     TextField(
-                        value = username,
+                        value = userName,
                         onValueChange = {
-                            username = it
+                            vm.sendIntent(it)
                         },
                         label = {
                             Text(
@@ -89,7 +90,7 @@ fun UserLoginView(appNavController: NavHostController?=null) {
                     TextField(
                         value = serverUrl,
                         onValueChange = {
-                            serverUrl = it
+                            vm.sendIntent(null,it)
                         },
                         label = {
                             Text(
@@ -103,13 +104,25 @@ fun UserLoginView(appNavController: NavHostController?=null) {
 
 
                     Button(
-                        onClick = {/*TODO*/ },
+                        onClick = {
+                                  if (SERVER_URL!=""){
+                                      if (USER_NAME!=""){
+                                          appNavController?.navigate(Route.WELCOME_PAGE)
+                                      }else{
+                                          err = "请输入用户名"
+                                      }
+                                  }else{
+                                      err = "请输入服务器地址"
+                                  }
+                        },
                         modifier = Modifier
                             .width(250.dp)
                             .padding(top = 15.dp)
                     ) {
                         Text(text = "确定")
                     }
+
+                err?.let { Text(text = it, modifier = Modifier.padding(top = 10.dp)) }
                 }
         }
 
