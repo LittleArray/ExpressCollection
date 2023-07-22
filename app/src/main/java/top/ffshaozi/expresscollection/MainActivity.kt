@@ -1,14 +1,21 @@
 package top.ffshaozi.expresscollection
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.ViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import top.ffshaozi.expresscollection.config.AppState.cm
 import top.ffshaozi.expresscollection.config.Route
 import top.ffshaozi.expresscollection.ui.screen.view.MainNavView
 import top.ffshaozi.expresscollection.ui.screen.view.UserLoginView
@@ -34,8 +41,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     }
 }
+
 @Preview
 @Composable
 fun previewMain(){
