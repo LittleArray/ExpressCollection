@@ -29,6 +29,7 @@ import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
 import top.ffshaozi.expresscollection.utils.GetSMS.getSMS
 import kotlinx.coroutines.*
 import top.ffshaozi.expresscollection.config.Setting
+import top.ffshaozi.expresscollection.config.Setting.setGlobalServerUrl
 
 class MainActivity : ComponentActivity() {
 
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
             ExpressCollectionTheme {
                 val appNavController = rememberNavController()
                 setGlobalUserName()
+                setGlobalServerUrl()
                 NavHost(navController = appNavController, startDestination = Route.WELCOME_PAGE){
                     composable(Route.USER_LOGIN_PAGE){
                         UserLoginView(appNavController)

@@ -30,5 +30,12 @@ object Setting {
             }
             USER_NAME = preferencesFlow.first()
         }
+    }fun setGlobalServerUrl() {
+        GlobalScope.launch {
+            val preferencesFlow: Flow<String> =dataStore.data.map {
+                it[PreferencesKeys.SERVER_URL] ?: "nul"
+            }
+            SERVER_URL = preferencesFlow.first()
+        }
     }
 }
