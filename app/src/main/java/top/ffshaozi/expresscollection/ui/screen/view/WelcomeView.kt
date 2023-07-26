@@ -28,9 +28,16 @@ import kotlin.system.exitProcess
 fun WelcomeView(appNavController: NavHostController?=null) {
     var contentVisible1 by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        delay(200)
-        contentVisible1 = true
-        delay(1000)
+        for (item: Int in 1..10) {
+            if (USER_NAME != "nul"){
+                contentVisible1 = true
+            }
+            delay(100)
+        }
+        if (USER_NAME == "nul"){
+            appNavController?.navigate(Route.USER_LOGIN_PAGE)
+        }
+        delay(100)
         appNavController?.navigate(Route.MAIN_NAV)
     }
 

@@ -1,5 +1,6 @@
 package top.ffshaozi.expresscollection
 
+import android.annotation.SuppressLint
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
@@ -12,29 +13,34 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import top.ffshaozi.expresscollection.config.Route
+import top.ffshaozi.expresscollection.config.Setting.USER_NAME
+import top.ffshaozi.expresscollection.config.Setting.setGlobalUserName
 import top.ffshaozi.expresscollection.ui.screen.state.AppState.cm
 import top.ffshaozi.expresscollection.ui.screen.state.AppState.pickMedia
 import top.ffshaozi.expresscollection.ui.screen.state.AppState.smsData
-import top.ffshaozi.expresscollection.config.Route
-import top.ffshaozi.expresscollection.config.Setting.USER_NAME
 import top.ffshaozi.expresscollection.ui.screen.view.MainNavView
 import top.ffshaozi.expresscollection.ui.screen.view.UserLoginView
 import top.ffshaozi.expresscollection.ui.screen.view.WelcomeView
 import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
 import top.ffshaozi.expresscollection.utils.GetSMS.getSMS
+import kotlinx.coroutines.*
+import top.ffshaozi.expresscollection.config.Setting
 
 class MainActivity : ComponentActivity() {
+
+    @SuppressLint("CoroutineCreationDuringComposition")
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             ExpressCollectionTheme {
                 val appNavController = rememberNavController()
-                var strRoute = if(USER_NAME==""){
-                    Route.USER_LOGIN_PAGE
-                } else {
-                    Route.WELCOME_PAGE
-                }
-                NavHost(navController = appNavController, startDestination = strRoute){
+                setGlobalUserName()
+                NavHost(navController = appNavController, startDestination = Route.WELCOME_PAGE){
                     composable(Route.USER_LOGIN_PAGE){
                         UserLoginView(appNavController)
                     }
