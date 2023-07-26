@@ -29,14 +29,16 @@ fun WelcomeView(appNavController: NavHostController?=null) {
     var contentVisible1 by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         for (item: Int in 1..10) {
-            if (USER_NAME != "nul"){
+            if (USER_NAME != ""){
+                if (USER_NAME == "nul"){
+                    appNavController?.navigate(Route.USER_LOGIN_PAGE)
+                    return@LaunchedEffect
+                }
                 contentVisible1 = true
             }
             delay(100)
         }
-        if (USER_NAME == "nul"){
-            appNavController?.navigate(Route.USER_LOGIN_PAGE)
-        }
+
         delay(100)
         appNavController?.navigate(Route.MAIN_NAV)
     }
