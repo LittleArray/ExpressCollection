@@ -3,6 +3,7 @@ package top.ffshaozi.expresscollection.ui.screen.view
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.icu.text.SimpleDateFormat
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,12 +13,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.setruth.yangdialog.YangDialog
 import com.setruth.yangdialog.YangDialogDefaults
 import top.ffshaozi.expresscollection.ui.screen.intent.SubmitViewModel
@@ -35,11 +38,39 @@ fun SubmitView (){
     val username by vm.userName.collectAsState()
     var dialogShowMsg by remember { mutableStateOf(false) }
     var dialogShowExp by remember { mutableStateOf(false) }
-    //选择图片
-    val pickImage = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        uri?.let {
-            vm.sendContextIntent("Selected URI: $uri")
+    var dialogShowImg by remember { mutableStateOf(false) }
+    //图片选择器
+    var imageUri: Uri? by remember {
+        mutableStateOf(null)
+    }
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocument()) {
+            it?.let { uri ->
+                dialogShowImg = true
+                imageUri = uri
+            }
         }
+    //图片显示
+    YangDialog(
+        title = "选择的图片",
+        isShow = dialogShowImg,//通过isShow展示或者隐藏dialog
+        onConfirm = {//确认选项的回调
+            imageUri?.let { vm.sendImgIntent(it) }
+            dialogShowImg = false
+        },
+        //底部设置
+        bottomConfig = YangDialogDefaults.bottomConfig(
+            showCancel = false,
+        ),
+        onDismissRequest = { //遮罩层点击的回调
+            dialogShowImg = false
+        },
+    ) {
+        AsyncImage(
+            model = imageUri,
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth
+        )
     }
     //我的快递
     YangDialog(
@@ -74,7 +105,8 @@ fun SubmitView (){
         },
         //底部设置
         bottomConfig = YangDialogDefaults.bottomConfig(
-            showCancel = false
+            showCancel = false,
+            showConfirm = false
         ),
         onDismissRequest = { //遮罩层点击的回调
             dialogShowMsg = false
@@ -175,7 +207,7 @@ fun SubmitView (){
                     Text(text = "获取短信")
                 }
                 Button(
-                    onClick = { pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                    onClick = { launcher.launch(arrayOf("image/*")) },
                     modifier = Modifier
                         .weight(1f)
                 ){
@@ -189,12 +221,10 @@ fun SubmitView (){
             ){
                 Text(text = "我的快递")
             }
+
         }
     }
-    Column (
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){}
+
 }
 fun getCM():String{
     val clipData: ClipData? = cm.primaryClip
