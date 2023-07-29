@@ -14,10 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import top.ffshaozi.expresscollection.config.Route
-import top.ffshaozi.expresscollection.config.Setting.USER_NAME
 import top.ffshaozi.expresscollection.config.Setting.setGlobalUserName
 import top.ffshaozi.expresscollection.ui.screen.state.AppState.cm
 import top.ffshaozi.expresscollection.ui.screen.state.AppState.pickMedia
@@ -28,8 +25,8 @@ import top.ffshaozi.expresscollection.ui.screen.view.WelcomeView
 import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
 import top.ffshaozi.expresscollection.utils.GetSMS.getSMS
 import kotlinx.coroutines.*
-import top.ffshaozi.expresscollection.config.Setting
 import top.ffshaozi.expresscollection.config.Setting.setGlobalServerUrl
+import top.ffshaozi.expresscollection.ui.screen.state.AppState.cr
 
 class MainActivity : ComponentActivity() {
 
@@ -70,6 +67,7 @@ class MainActivity : ComponentActivity() {
                 Log.e("PhotoPicker", "No media selected")
             }
         }
+        cr = contentResolver
     }
 }
 
