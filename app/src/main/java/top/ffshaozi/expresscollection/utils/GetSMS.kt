@@ -21,7 +21,7 @@ object GetSMS {
                 val date = cursor.getLong(cursor.getColumnIndex("date"))
                 smsList.add(SMSData(address, body, date))
                 intBox++
-            } while (cursor.moveToNext() && intBox<35)
+            } while (cursor.moveToNext() && intBox<200)
             cursor.close()
         }
 

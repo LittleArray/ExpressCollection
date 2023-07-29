@@ -87,25 +87,27 @@ fun SubmitView (){
         ) {
             Column {
                 smsData.forEachIndexed { _, smsData ->
-                    val dateFormat = SimpleDateFormat(
-                        "yyyy-MM-dd hh:mm:ss"
-                    )
-                    val d = smsData.date?.let { Date(it) }
-                    val strDate: String = dateFormat.format(d)
-
-                    Card (
-                        onClick = {
-                            vm.sendContextIntent(smsData.body.toString())
-                            dialogShowMsg = false
-                        },
-                        modifier = Modifier
-                            .padding(10.dp)
-                    ){
-                        Text(
-                            text = smsData.address.toString() + "  " + strDate + "\n\n" + smsData.body.toString(),
-                            modifier = Modifier
-                                .padding(12.dp)
+                    if (smsData.body?.indexOf("快递")!=-1) {
+                        val dateFormat = SimpleDateFormat(
+                            "yyyy-MM-dd hh:mm:ss"
                         )
+                        val d = smsData.date?.let { Date(it) }
+                        val strDate: String = dateFormat.format(d)
+
+                        Card(
+                            onClick = {
+                                vm.sendContextIntent(smsData.body.toString())
+                                dialogShowMsg = false
+                            },
+                            modifier = Modifier
+                                .padding(10.dp)
+                        ) {
+                            Text(
+                                text = smsData.address.toString() + "\n" + strDate + "\n\n" + smsData.body.toString(),
+                                modifier = Modifier
+                                    .padding(12.dp)
+                            )
+                        }
                     }
                 }
             }
