@@ -1,6 +1,8 @@
 package top.ffshaozi.expresscollection.ui.screen.view
 
+import android.annotation.SuppressLint
 import android.content.ClipData
+import android.icu.text.SimpleDateFormat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,23 +24,48 @@ import top.ffshaozi.expresscollection.ui.screen.intent.SubmitViewModel
 import top.ffshaozi.expresscollection.ui.screen.state.AppState.cm
 import top.ffshaozi.expresscollection.ui.screen.state.AppState.smsData
 import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
+import java.util.*
 
+@SuppressLint("SimpleDateFormat")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubmitView (){
-    val submitViewModel:SubmitViewModel= viewModel()
-    val contentVM by submitViewModel.contentText.collectAsState()
-    val username by submitViewModel.userName.collectAsState()
-    var dialogShowMsg by remember {
-        mutableStateOf(false)
-    }
+    val vm:SubmitViewModel= viewModel()
+    val contentVM by vm.contentText.collectAsState()
+    val username by vm.userName.collectAsState()
+    var dialogShowMsg by remember { mutableStateOf(false) }
+    var dialogShowExp by remember { mutableStateOf(false) }
     //选择图片
     val pickImage = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         uri?.let {
-            submitViewModel.sendIntent("Selected URI: $uri")
+            vm.sendContextIntent("Selected URI: $uri")
         }
     }
+    //我的快递
+    YangDialog(
+        title = "我的快递",
+        isShow = dialogShowExp,//通过isShow展示或者隐藏dialog
+        onConfirm = {//确认选项的回调
+            dialogShowExp = false
+        },
+        //底部设置
+        bottomConfig = YangDialogDefaults.bottomConfig(
+            showCancel = false,
+            showConfirm = false
+        ),
+        onDismissRequest = { //遮罩层点击的回调
+            dialogShowExp = false
+        },
+    ) {
+        Box(
+            modifier = Modifier
+                .height(600.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
 
+        }
+    }
+    //选择短信Dialog
     YangDialog(
         title = "选择短信",
         isShow = dialogShowMsg,//通过isShow展示或者隐藏dialog
@@ -60,16 +87,22 @@ fun SubmitView (){
         ) {
             Column {
                 smsData.forEachIndexed { _, smsData ->
+                    val dateFormat = SimpleDateFormat(
+                        "yyyy-MM-dd hh:mm:ss"
+                    )
+                    val d = smsData.date?.let { Date(it) }
+                    val strDate: String = dateFormat.format(d)
+
                     Card (
                         onClick = {
-                            submitViewModel.sendIntent(smsData.body.toString())
+                            vm.sendContextIntent(smsData.body.toString())
                             dialogShowMsg = false
                         },
                         modifier = Modifier
                             .padding(10.dp)
                     ){
                         Text(
-                            text = smsData.address.toString() + "  " + smsData.date.toString() + "\n\n" + smsData.body.toString(),
+                            text = smsData.address.toString() + "  " + strDate + "\n\n" + smsData.body.toString(),
                             modifier = Modifier
                                 .padding(12.dp)
                         )
@@ -98,7 +131,7 @@ fun SubmitView (){
             OutlinedTextField(
                 value = contentVM,
                 onValueChange = {
-                    submitViewModel.sendIntent(it)
+                    vm.sendContextIntent(it)
                 },
                 label = {
                     Text(
@@ -111,7 +144,7 @@ fun SubmitView (){
                     .defaultMinSize(minWidth = Dp.Unspecified, minHeight = 300.dp)
             )
             Button(
-                onClick = {/*TODO*/},
+                onClick = {vm.submit()},
                 modifier = Modifier
                     .padding(top = 15.dp)
                     .fillMaxWidth()
@@ -124,9 +157,7 @@ fun SubmitView (){
                 horizontalArrangement = Arrangement.Center
             ){
                 Button(
-                onClick = {
-                    submitViewModel.sendIntent(getCM())
-                          },
+                onClick = { vm.sendContextIntent(getCM()) },
                 modifier = Modifier
                     .padding(end = 7.dp)
                     .weight(1f)
@@ -134,9 +165,7 @@ fun SubmitView (){
                 Text(text = "获取剪切板")
                 }
                 Button(
-                    onClick = {
-                        dialogShowMsg=true
-                              },
+                    onClick = { dialogShowMsg=true },
                     modifier = Modifier
                         .padding(end = 7.dp)
                         .weight(1f)
@@ -144,14 +173,19 @@ fun SubmitView (){
                     Text(text = "获取短信")
                 }
                 Button(
-                    onClick = {
-                        pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                       },
+                    onClick = { pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
                     modifier = Modifier
                         .weight(1f)
                 ){
                     Text(text = "获取截图")
                 }
+            }
+            Button(
+                onClick = {dialogShowExp = true},
+                modifier = Modifier
+                    .fillMaxWidth()
+            ){
+                Text(text = "我的快递")
             }
         }
     }

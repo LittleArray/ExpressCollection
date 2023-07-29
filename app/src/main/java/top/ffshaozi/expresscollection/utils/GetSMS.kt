@@ -13,15 +13,18 @@ object GetSMS {
         val smsList = mutableListOf<SMSData>()
         val uri = Uri.parse("content://sms/inbox")
         val cursor = context.contentResolver.query(uri, null, null, null, null)
+        var intBox = 0
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 val address = cursor.getString(cursor.getColumnIndex("address"))
                 val body = cursor.getString(cursor.getColumnIndex("body"))
                 val date = cursor.getLong(cursor.getColumnIndex("date"))
                 smsList.add(SMSData(address, body, date))
-            } while (cursor.moveToNext())
+                intBox++
+            } while (cursor.moveToNext() && intBox<35)
             cursor.close()
         }
+
         return smsList
     }
 

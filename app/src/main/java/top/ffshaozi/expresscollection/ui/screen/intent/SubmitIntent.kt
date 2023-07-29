@@ -13,7 +13,10 @@ class SubmitViewModel : ViewModel() {
     init {
         _userName.value = USER_NAME
     }
-    fun sendIntent(str:String){
+    fun sendContextIntent(str:String){
         _contentText.value = str
+    }
+    fun submit(){
+
     }
 }
