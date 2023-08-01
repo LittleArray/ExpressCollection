@@ -2,11 +2,15 @@ package top.ffshaozi.expresscollection
 
 import android.annotation.SuppressLint
 import android.content.ClipboardManager
+import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
@@ -16,9 +20,6 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.DelicateCoroutinesApi
 import top.ffshaozi.expresscollection.config.Route
 import top.ffshaozi.expresscollection.config.Setting.setGlobalUserName
-import top.ffshaozi.expresscollection.ui.screen.state.AppState.cm
-import top.ffshaozi.expresscollection.ui.screen.state.AppState.pickMedia
-import top.ffshaozi.expresscollection.ui.screen.state.AppState.smsData
 import top.ffshaozi.expresscollection.ui.screen.view.MainNavView
 import top.ffshaozi.expresscollection.ui.screen.view.UserLoginView
 import top.ffshaozi.expresscollection.ui.screen.view.WelcomeView
@@ -26,10 +27,15 @@ import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
 import top.ffshaozi.expresscollection.utils.GetSMS.getSMS
 import kotlinx.coroutines.*
 import top.ffshaozi.expresscollection.config.Setting.setGlobalServerUrl
-import top.ffshaozi.expresscollection.ui.screen.state.AppState.cr
+import top.ffshaozi.expresscollection.utils.GetSMS
 
 class MainActivity : ComponentActivity() {
 
+    companion object {
+        lateinit var cm: ClipboardManager
+        lateinit var smsData: List<GetSMS.SMSData>
+        lateinit var cr: ContentResolver
+    }
     @SuppressLint("CoroutineCreationDuringComposition")
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,20 +63,10 @@ class MainActivity : ComponentActivity() {
         //获取短信
         smsData = getSMS(this)
         //照片选择器
-        // Registers a photo picker activity launcher in single-select mode.
-        pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-            // Callback is invoked after the user selects a media item or closes the
-            // photo picker.
-            if (uri != null) {
-                Log.e("PhotoPicker", "Selected URI: $uri")
-            } else {
-                Log.e("PhotoPicker", "No media selected")
-            }
-        }
         cr = contentResolver
+
     }
 }
-
 @Preview
 @Composable
 fun previewMain(){

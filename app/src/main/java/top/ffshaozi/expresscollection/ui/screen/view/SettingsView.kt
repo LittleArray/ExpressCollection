@@ -18,10 +18,12 @@ import top.ffshaozi.expresscollection.config.PreferencesKeys
 import top.ffshaozi.expresscollection.config.Setting.SERVER_URL
 import top.ffshaozi.expresscollection.config.Setting.USER_NAME
 import top.ffshaozi.expresscollection.config.Setting.putValue
+import top.ffshaozi.expresscollection.ui.screen.intent.SettingViewModel
 import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
 
 @Composable
 fun SettingsView (){
+    val vm:SettingViewModel = viewModel()
     var name by remember {
         mutableStateOf(USER_NAME)
     }
@@ -74,16 +76,7 @@ fun SettingsView (){
                     .padding(bottom = 15.dp)
             )
             Button(
-                onClick = {
-                    if (name != ""){
-                        if (url !=""){
-                            putValue(PreferencesKeys.USER_NAME,name)
-                            putValue(PreferencesKeys.SERVER_URL,url)
-                            USER_NAME=name
-                            SERVER_URL=url
-                        }
-                    }
-                          },
+                onClick = { vm.save(name,url) },
                 modifier = Modifier.padding(bottom = 15.dp).fillMaxWidth()
             ){
                 Text(text = "保存")

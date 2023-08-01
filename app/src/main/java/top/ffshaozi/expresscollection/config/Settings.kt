@@ -26,14 +26,14 @@ object Setting {
     fun setGlobalUserName() {
         GlobalScope.launch {
             val preferencesFlow: Flow<String> =dataStore.data.map {
-                it[PreferencesKeys.USER_NAME] ?: "nul"
+                it[PreferencesKeys.USER_NAME] ?: ""
             }
             USER_NAME = preferencesFlow.first()
         }
     }fun setGlobalServerUrl() {
         GlobalScope.launch {
             val preferencesFlow: Flow<String> =dataStore.data.map {
-                it[PreferencesKeys.SERVER_URL] ?: "nul"
+                it[PreferencesKeys.SERVER_URL] ?: ""
             }
             SERVER_URL = preferencesFlow.first()
         }

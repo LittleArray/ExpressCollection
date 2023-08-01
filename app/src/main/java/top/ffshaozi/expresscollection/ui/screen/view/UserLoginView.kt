@@ -36,7 +36,7 @@ fun UserLoginView(appNavController: NavHostController?=null) {
     val userName by vm.userName.collectAsState()
     var contentVisible1 by remember{ mutableStateOf(false) }
     var contentVisible2 by remember{ mutableStateOf(false) }
-    var err:String = ""
+    var err by remember{ mutableStateOf("") }
     LaunchedEffect(Unit){
         delay(500)
         contentVisible1 = true
@@ -107,18 +107,7 @@ fun UserLoginView(appNavController: NavHostController?=null) {
 
                     Button(
                         onClick = {
-                            err = ""
-                            if (SERVER_URL!=""){
-                                if (USER_NAME!=""){
-                                    putValue(PreferencesKeys.USER_NAME,USER_NAME)
-                                    putValue(PreferencesKeys.SERVER_URL, SERVER_URL)
-                                    appNavController?.navigate(Route.WELCOME_PAGE)
-                                }else{
-                                    err += "请输入用户名\n"
-                                }
-                            }else{
-                                err += "请输入服务器地址\n"
-                            }
+                            appNavController?.let { err = vm.submit(it) }
                         },
                         modifier = Modifier
                             .width(250.dp)
@@ -127,7 +116,7 @@ fun UserLoginView(appNavController: NavHostController?=null) {
                         Text(text = "确定")
                     }
 
-                Text(text = err, modifier = Modifier.padding(top = 10.dp))
+                Text(text = err, modifier = Modifier.padding(top = 10.dp), color = MaterialTheme.colorScheme.primary)
                 }
         }
 

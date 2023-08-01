@@ -5,7 +5,6 @@ import android.content.ClipData
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -23,9 +22,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.setruth.yangdialog.YangDialog
 import com.setruth.yangdialog.YangDialogDefaults
+import top.ffshaozi.expresscollection.MainActivity.Companion.cm
+import top.ffshaozi.expresscollection.MainActivity.Companion.smsData
 import top.ffshaozi.expresscollection.ui.screen.intent.SubmitViewModel
-import top.ffshaozi.expresscollection.ui.screen.state.AppState.cm
-import top.ffshaozi.expresscollection.ui.screen.state.AppState.smsData
 import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
 import java.util.*
 

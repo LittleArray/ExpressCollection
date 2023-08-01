@@ -1,12 +1,13 @@
 package top.ffshaozi.expresscollection.ui.screen.view
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.expandVertically
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -16,12 +17,21 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import top.ffshaozi.expresscollection.config.Setting.USER_NAME
 import top.ffshaozi.expresscollection.ui.screen.intent.CollectIntent
+import top.ffshaozi.expresscollection.ui.screen.intent.CollectJson
 import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
 
 @Composable
 fun CollectView () {
     val testList:List<String> = listOf("8-3887","3栋二单元102","顺丰")
     val vm:CollectIntent = viewModel()
+    var stateList = remember { mutableStateListOf<CollectJson>()}
+    LaunchedEffect (Unit){
+        vm.getData()?.let { data ->
+            data.data.forEach{
+                stateList.add(it)
+            }
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -32,45 +42,31 @@ fun CollectView () {
     ) {
         Column {
             Text(
-                text = "你好,$USER_NAME",
+                text = "你好,${USER_NAME}",
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 32.sp,
                 textAlign = TextAlign.Left,
                 modifier = Modifier
                     .padding(bottom = 15.dp)
             )
-            Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
+            LazyColumn(
             ) {
-                CradCollectView(
-                    testList,
-                    "【驿收发】取货码8-3887的顺丰包裹*3887已到南湖锦城3栋二单元102，请21:30前来取，详询17671048589",
-                    "100001",
-                    "200001",
-                    vm
-                )
-                CradCollectView(
-                    testList,
-                    "【驿收发】取货码8-3887的顺丰包裹*3887已到南湖锦城3栋二单元102，请21:30前来取，详询17671048589",
-                    "100001",
-                    "200001",
-                    vm
-                )
-                CradCollectView(
-                    testList,
-                    "【驿收发】取货码8-3887的顺丰包裹*3887已到南湖锦城3栋二单元102，请21:30前来取，详询17671048589",
-                    "100001",
-                    "200001",
-                    vm
-                )
+                itemsIndexed(stateList) { index, item ->
+                    CradCollectView(item,vm,stateList,index)
+                }
             }
+
         }
     }
 }
 
 @Composable
-fun CradCollectView(keywords: List<String>, context: String, uid: String, pid: String, viewModel: CollectIntent){
+fun CradCollectView(
+    collectJson: CollectJson,
+    viewModel: CollectIntent,
+    stateList: SnapshotStateList<CollectJson>,
+    index: Int
+){
     var contentVisible by remember { mutableStateOf(true) }
     Column(){
         AnimatedVisibility(
@@ -98,24 +94,24 @@ fun CradCollectView(keywords: List<String>, context: String, uid: String, pid: S
                             modifier = Modifier
                                 .padding(end = 10.dp, top = 5.dp)
                         )
-                        keywords.forEach{
+                        collectJson.keywords.forEach{
                             KeywordsCaed(it)
                         }
                     }
                     Text(
                         fontSize = 20.sp,
-                        text = context
+                        text = collectJson.content
                     )
                     Text(
                         fontSize = 16.sp,
-                        text = "UID:$uid PID:$pid"
+                        text = "PID:${collectJson.pid}"
                     )
                     Button(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 10.dp),
                         onClick = {
-                            viewModel.collect(uid,pid,true)
+                            viewModel.collect(collectJson.pid,true)
                             contentVisible=false
                         }
                     ) {
@@ -125,7 +121,7 @@ fun CradCollectView(keywords: List<String>, context: String, uid: String, pid: S
                         modifier = Modifier
                             .fillMaxWidth(),
                         onClick = {
-                            viewModel.collect(uid,pid,false)
+                            viewModel.collect(collectJson.pid,false)
                             contentVisible=false
                         }
                     ) {
