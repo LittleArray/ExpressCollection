@@ -8,6 +8,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,8 +27,11 @@ import com.setruth.yangdialog.YangDialogDefaults
 import kotlinx.coroutines.delay
 import top.ffshaozi.expresscollection.MainActivity.Companion.cm
 import top.ffshaozi.expresscollection.MainActivity.Companion.smsData
+import top.ffshaozi.expresscollection.ui.screen.intent.CollectJson
+import top.ffshaozi.expresscollection.ui.screen.intent.MyCollectJson
 import top.ffshaozi.expresscollection.ui.screen.intent.SubmitViewModel
 import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
+import top.ffshaozi.expresscollection.utils.NetworkUtils
 import java.util.*
 
 @SuppressLint("SimpleDateFormat")
@@ -37,10 +42,24 @@ fun SubmitView (){
     val contentVM by vm.contentText.collectAsState()
     val username by vm.userName.collectAsState()
     val subState by vm.subState.collectAsState()
+    val stateList = remember { mutableStateListOf<MyCollectJson>()}
     var dialogShowMsg by remember { mutableStateOf(false) }
     var dialogShowExp by remember { mutableStateOf(false) }
     var dialogShowImg by remember { mutableStateOf(false) }
     var dialogShowSubState by remember { mutableStateOf(false) }
+    if (dialogShowExp) {
+        stateList.removeAll(stateList)
+        LaunchedEffect(Unit) {
+
+            NetworkUtils.getMyData(result = { data ->
+                data.data.forEach {
+                    stateList.add(it)
+                }
+            }, state = {
+            })
+
+        }
+    }
     if (subState == "上传中"){
         dialogShowSubState = true
     }
@@ -125,12 +144,32 @@ fun SubmitView (){
             dialogShowExp = false
         },
     ) {
-        Box(
-            modifier = Modifier
-                .height(600.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
+        LazyColumn{
+            itemsIndexed(stateList) { index, item ->
+                Card(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp)
+                ) {
+                    Column (
+                        modifier = Modifier.padding(10.dp)
+                    ){
+                        Text(text = item.content, modifier = Modifier.padding(bottom = 15.dp))
+                        if(item.isCollect){
+                            Text(text = "取出人:${item.collectUserName} PID:${item.pid}")
+                            Text(text = "取出时间:${item.collectTime}")
+                            if(item.collectState){
+                                Text(text = "已成功取出", fontSize = 18.sp)
+                            }else{
+                                Text(text = "取出失败,原因请联系取出人",fontSize =18.sp)
+                            }
 
+                        }else{
+                            Text(text = "未取出",fontSize = 18.sp)
+                        }
+
+                    }
+                }
+            }
         }
     }
     //选择短信Dialog

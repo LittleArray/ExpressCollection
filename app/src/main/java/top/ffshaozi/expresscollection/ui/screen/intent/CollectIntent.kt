@@ -11,9 +11,12 @@ data class CollectJson(
     val content:String,
     val keywords:List<String>
 )
+
 data class Data(
     val data:List<CollectJson>
 )
+
+
 
 
 class CollectIntent : ViewModel (){

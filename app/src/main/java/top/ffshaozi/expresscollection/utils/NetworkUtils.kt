@@ -7,9 +7,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import top.ffshaozi.expresscollection.config.Setting
-import top.ffshaozi.expresscollection.ui.screen.intent.CollectJson
-import top.ffshaozi.expresscollection.ui.screen.intent.Data
-import top.ffshaozi.expresscollection.ui.screen.intent.SubmitData
+import top.ffshaozi.expresscollection.config.Setting.USER_NAME
+import top.ffshaozi.expresscollection.ui.screen.intent.*
 import java.util.concurrent.CompletableFuture
 
 object NetworkUtils {
@@ -42,10 +41,39 @@ object NetworkUtils {
             }
         }.start()
     }
+    fun getMyData(result:(MyData) -> Unit, state: (String) -> Unit) {
+        Thread {
+            val url = "${Setting.SERVER_URL}/getMydata/$USER_NAME"
+            val client = OkHttpClient()
+            val request = Request.Builder()
+                .url(url)
+                .build()
+            state("获取数据中")
+            try {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    val json = Gson().fromJson(response.body?.string(), MyData::class.java)
+                    result(json)
+                    state("获取成功")
+                }
+            } catch (e: Exception) {
+                result(
+                    MyData(
+                        listOf(
+                            MyCollectJson(
+                                "", e.stackTraceToString(), "","", "",false,false
+                            )
+                        )
+                    )
+                )
+                state("获取失败")
+            }
+        }.start()
+    }
     fun postCollectState(pid: String,state:Boolean): String? {
 
         return CompletableFuture.supplyAsync{
-            val url = "${Setting.SERVER_URL}/collect/pid=${pid}/state=${state}"
+            val url = "${Setting.SERVER_URL}/collect/pid=${pid}/state=${state}/username=$USER_NAME"
             var temp:String ?= null
             val client = OkHttpClient()
             val request = Request.Builder()

@@ -20,7 +20,18 @@ data class SubmitData(
     val contentType:String,
     val content:String,
 )
-
+data class MyData(
+    val data:List<MyCollectJson>
+)
+data class MyCollectJson(
+    val contentType:String,
+    val content:String,
+    val pid: String,
+    val collectTime:String,
+    val collectUserName:String,
+    val isCollect:Boolean,
+    val collectState:Boolean
+)
 class SubmitViewModel : ViewModel() {
     private var _contentText= MutableStateFlow(String())
     val contentText = _contentText
