@@ -15,23 +15,65 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.setruth.yangdialog.YangDialog
+import com.setruth.yangdialog.YangDialogDefaults
+import kotlinx.coroutines.delay
 import top.ffshaozi.expresscollection.config.Setting.USER_NAME
 import top.ffshaozi.expresscollection.ui.screen.intent.CollectIntent
 import top.ffshaozi.expresscollection.ui.screen.intent.CollectJson
 import top.ffshaozi.expresscollection.ui.theme.ExpressCollectionTheme
+import top.ffshaozi.expresscollection.utils.NetworkUtils.getData
 
 @Composable
 fun CollectView () {
-    val testList:List<String> = listOf("8-3887","3栋二单元102","顺丰")
     val vm:CollectIntent = viewModel()
-    var stateList = remember { mutableStateListOf<CollectJson>()}
+    val stateList = remember { mutableStateListOf<CollectJson>()}
+    var dialogShowSubState by remember { mutableStateOf(false) }
+    var dialogShowText by remember { mutableStateOf("") }
     LaunchedEffect (Unit){
-        vm.getData()?.let { data ->
+        getData(result = { data ->
             data.data.forEach{
                 stateList.add(it)
             }
+        }, state = {
+            dialogShowText = it
+        })
+    }
+    if (dialogShowText == "获取数据中"){
+        dialogShowSubState = true
+    }
+    if (dialogShowText == "获取成功"){
+        LaunchedEffect(Unit) {
+            delay(100)
+            dialogShowSubState = false
         }
     }
+    if (dialogShowText == "获取失败"){
+        LaunchedEffect(Unit){
+            delay(1000)
+            dialogShowSubState = false
+        }
+    }
+    //加载显示
+    YangDialog(
+        title = "请稍后...",
+        isShow = dialogShowSubState,//通过isShow展示或者隐藏dialog
+        onConfirm = {//确认选项的回调
+        },
+        //底部设置
+        bottomConfig = YangDialogDefaults.bottomConfig(
+            showCancel = false,
+            showConfirm = false
+        ),
+        onDismissRequest = { //遮罩层点击的回调
+        },
+    ) {
+        Row {
+            CircularProgressIndicator(modifier = Modifier.padding(10.dp))
+            Text(text = dialogShowText, modifier = Modifier.padding(10.dp).padding(top=10.dp))
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -49,10 +91,9 @@ fun CollectView () {
                 modifier = Modifier
                     .padding(bottom = 15.dp)
             )
-            LazyColumn(
-            ) {
+            LazyColumn{
                 itemsIndexed(stateList) { index, item ->
-                    CradCollectView(item,vm,stateList,index)
+                    CardCollectView(item,vm,stateList,index)
                 }
             }
 
@@ -61,14 +102,14 @@ fun CollectView () {
 }
 
 @Composable
-fun CradCollectView(
+fun CardCollectView(
     collectJson: CollectJson,
     viewModel: CollectIntent,
     stateList: SnapshotStateList<CollectJson>,
     index: Int
 ){
     var contentVisible by remember { mutableStateOf(true) }
-    Column(){
+    Column{
         AnimatedVisibility(
             visible = contentVisible,
         ) {
@@ -95,7 +136,7 @@ fun CradCollectView(
                                 .padding(end = 10.dp, top = 5.dp)
                         )
                         collectJson.keywords.forEach{
-                            KeywordsCaed(it)
+                            KeywordsCard(it)
                         }
                     }
                     Text(
@@ -104,7 +145,7 @@ fun CradCollectView(
                     )
                     Text(
                         fontSize = 16.sp,
-                        text = "PID:${collectJson.pid}"
+                        text = "PID:${collectJson.pid} 提交者:${collectJson.userName}"
                     )
                     Button(
                         modifier = Modifier
@@ -136,7 +177,7 @@ fun CradCollectView(
 }
 
 @Composable
-fun KeywordsCaed(context:String){
+fun KeywordsCard(context:String){
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
         modifier = Modifier

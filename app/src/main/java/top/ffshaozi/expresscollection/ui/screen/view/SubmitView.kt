@@ -22,6 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.setruth.yangdialog.YangDialog
 import com.setruth.yangdialog.YangDialogDefaults
+import kotlinx.coroutines.delay
 import top.ffshaozi.expresscollection.MainActivity.Companion.cm
 import top.ffshaozi.expresscollection.MainActivity.Companion.smsData
 import top.ffshaozi.expresscollection.ui.screen.intent.SubmitViewModel
@@ -35,9 +36,46 @@ fun SubmitView (){
     val vm:SubmitViewModel= viewModel()
     val contentVM by vm.contentText.collectAsState()
     val username by vm.userName.collectAsState()
+    val subState by vm.subState.collectAsState()
     var dialogShowMsg by remember { mutableStateOf(false) }
     var dialogShowExp by remember { mutableStateOf(false) }
     var dialogShowImg by remember { mutableStateOf(false) }
+    var dialogShowSubState by remember { mutableStateOf(false) }
+    if (subState == "上传中"){
+        dialogShowSubState = true
+    }
+    if (subState == "上传成功"){
+        LaunchedEffect(Unit) {
+            delay(100)
+            dialogShowSubState = false
+        }
+    }
+    if (subState == "上传失败"){
+        LaunchedEffect(Unit){
+            delay(1000)
+            dialogShowSubState = false
+        }
+    }
+    //加载显示
+    YangDialog(
+        title = "请稍后...",
+        isShow = dialogShowSubState,//通过isShow展示或者隐藏dialog
+        onConfirm = {//确认选项的回调
+        },
+        //底部设置
+        bottomConfig = YangDialogDefaults.bottomConfig(
+            showCancel = false,
+            showConfirm = false
+        ),
+        onDismissRequest = { //遮罩层点击的回调
+        },
+    ) {
+        Row {
+            CircularProgressIndicator(modifier = Modifier.padding(10.dp))
+            Text(text = subState, modifier = Modifier.padding(10.dp).padding(top=10.dp))
+        }
+    }
+
     //图片选择器
     var imageUri: Uri? by remember {
         mutableStateOf(null)
